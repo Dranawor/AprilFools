@@ -6,10 +6,10 @@
     <title>Bingo Card Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
         body {
-            font-family: 'Merriweather', serif;
+            font-family: 'Bangers', cursive;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
@@ -18,6 +18,7 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         main {
@@ -29,6 +30,9 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
         }
 
         button {
@@ -48,30 +52,23 @@
 
         #bingoCardContainer {
             position: relative;
-            width: 768px;
-            height: 1365px;
-        }
-
-        #bingoCardContainer img.background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 768px;
-            height: 1365px;
-            object-fit: contain;
-            z-index: 0;
+            width: min(90vw, 768px);
+            height: calc(min(90vw, 768px) * (1365 / 768));
+            background: url('https://i.imgur.com/4ybo8Ox.jpeg') no-repeat center center;
+            background-size: contain;
+            margin-top: 20px;
         }
 
         .grid-area {
             position: absolute;
-            top: 440px;
-            left: 49px;
-            width: 670px;
-            height: 765px;
+            top: 32.2%;
+            left: 6.4%;
+            width: 87.3%;
+            height: 56%;
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            z-index: 1; 
+            box-sizing: border-box;
         }
 
         .grid-item {
@@ -79,34 +76,27 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            height: 100%;
-            padding: 10px;
+            padding: 5px;
             position: relative;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .grid-item span {
-            font-size: 16px;
+            font-size: clamp(16px, 3vw, 18px);
             font-weight: bold;
-            line-height: 1.2;
+            line-height: 1.4; /* Increased line-height */
             color: #333;
             white-space: normal;
             word-break: break-word;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2; /* Limit to 2 lines */
             overflow: hidden;
-            max-width: 100%;
-            margin-top: 5px;
-        }
-
-        .free-square {
-            cursor: default; /* Not clickable */
-        }
-
-        .free-square img {
-            max-width: 105px; 
-            max-height: 105px; 
+            max-width: 95%;
+            margin-top: 2px;
+            padding-bottom: 6px; /* Extra padding to prevent cutoff */
+            box-sizing: border-box;
         }
 
         .grid-item.marked::after {
@@ -130,6 +120,7 @@
             justify-content: center;
             align-items: center;
             margin: 5px 0;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -137,7 +128,6 @@
     <main>
         <button onclick="generateBingoCard()">Create Card!</button>
         <div id="bingoCardContainer">
-            <img class="background" src="https://i.imgur.com/wSbpsp6.png" alt="Bingo Card Background" />
             <div class="grid-area" id="bingoGrid"></div>
         </div>
         <div class="button-row">
@@ -147,42 +137,36 @@
     </main>
 
     <script>
-        const FREE_SQUARE_IMG = "https://stonemaiergames.com/wp-content/uploads/2015/01/Stonemaier-logo-Apricot-Orange-300x273.png";
         const items = [
-            "Play a game with a friend",
-            "Take a picture of a game on the table",
-            "Try a new board game",
-            "Win a game",
-            "Lose a game gracefully",
-            "Teach someone a new game",
-            "Play a co-op game",
-            "Play a game with dice",
-            "Shuffle a deck of cards",
-            "Organize your board game shelf",
-            "Explain the rules to someone",
-            "Play a game with a timer",
-            "Play a game solo",
-            "Trade a game with a friend",
-            "Finish a long game",
-            "Play a game with a unique theme",
-            "Play a game with miniatures",
-            "Host a game night",
-            "Play a game from your wishlist",
-            "Play a game outside",
-            "Read the rules of a new game",
-            "Play a card-drafting game",
-            "Score over 100 points in a game",
-            "Play a game in under 30 minutes",
-            "Try a game expansion",
-            "Introduce a child to a board game",
-            "Play a game with four or more players",
-            "Revisit an old favorite game",
-            "Set up a complex game",
-            "Complete a game puzzle"
+            "Apiary",
+            "Between Two Castles",
+            "Between Two Cities",
+            "Charterstone",
+            "Euphoria",
+            "Expeditions",
+            "Finspan",
+            "Libertalia",
+            "My Little Scythe",
+            "Namiji",
+            "Pendulum",
+            "Red Rising",
+            "Rolling Realms",
+            "Rolling Realms Redux",
+            "Scythe",
+            "Smitten",
+            "Stamp Swap",
+            "Tapestry",
+            "Tokaido",
+            "Tokaido Duo",
+            "Vantage",
+            "Viticulture",
+            "Wingspan",
+            "Wingspan Asia",
+            "Wyrmspan"
         ];
 
-        let currentCard = null;   // 2D array: each cell = an item text or "Free Square"
-        let markedStates = null;  // 2D array of booleans
+        let currentCard = null;   
+        let markedStates = null;  
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -193,18 +177,17 @@
         }
 
         function generateBingoCard() {
+            // Use all 25 items, shuffled
             const shuffledItems = shuffleArray([...items]);
+
             const bingoCard = Array.from({ length: 5 }, () => []);
             let itemIndex = 0;
             for (let row = 0; row < 5; row++) {
                 for (let col = 0; col < 5; col++) {
-                    if (row === 2 && col === 2) {
-                        bingoCard[row][col] = "Free Square";
-                    } else {
-                        bingoCard[row][col] = shuffledItems[itemIndex++];
-                    }
+                    bingoCard[row][col] = shuffledItems[itemIndex++];
                 }
             }
+
             currentCard = bingoCard;
             markedStates = Array.from({ length: 5 }, () => Array(5).fill(false));
             renderBingoCard(bingoCard, markedStates);
@@ -218,21 +201,14 @@
                 for (let col = 0; col < 5; col++) {
                     const div = document.createElement("div");
                     div.classList.add("grid-item");
+                    const span = document.createElement("span");
+                    span.textContent = bingoCard[row][col];
+                    div.appendChild(span);
 
-                    if (row === 2 && col === 2) {
-                        div.classList.add("free-square");
-                        const img = document.createElement("img");
-                        img.src = FREE_SQUARE_IMG;
-                        div.appendChild(img);
-                    } else {
-                        const span = document.createElement("span");
-                        span.textContent = bingoCard[row][col];
-                        div.appendChild(span);
-                        div.addEventListener("click", () => {
-                            div.classList.toggle("marked");
-                            markedStates[row][col] = div.classList.contains("marked");
-                        });
-                    }
+                    div.addEventListener("click", () => {
+                        div.classList.toggle("marked");
+                        markedStates[row][col] = div.classList.contains("marked");
+                    });
 
                     if (markedStates[row][col]) {
                         div.classList.add("marked");
@@ -243,26 +219,18 @@
             }
         }
 
-        // Compress card into indexes
-        // -1 for free square
-        // Otherwise index in items array
         function cardToIndexes() {
             const indices = [];
             for (let row = 0; row < 5; row++) {
                 for (let col = 0; col < 5; col++) {
-                    if (row === 2 && col === 2) {
-                        indices.push(-1);
-                    } else {
-                        const text = currentCard[row][col];
-                        const idx = items.indexOf(text);
-                        indices.push(idx);
-                    }
+                    const text = currentCard[row][col];
+                    const idx = items.indexOf(text);
+                    indices.push(idx);
                 }
             }
             return indices;
         }
 
-        // Convert markedStates to a binary string
         function markedToBinary() {
             let bin = "";
             for (let row = 0; row < 5; row++) {
@@ -273,45 +241,33 @@
             return bin;
         }
 
-        // Convert binary string to base64
         function binToBase64(bin) {
-            // Convert binary to a byte array
             const len = Math.ceil(bin.length / 8);
             const bytes = new Uint8Array(len);
             for (let i = 0; i < len; i++) {
                 const chunk = bin.slice(i*8, i*8+8).padEnd(8, '0');
                 bytes[i] = parseInt(chunk, 2);
             }
-            // base64 encode
             let str = String.fromCharCode.apply(null, bytes);
             return btoa(str);
         }
 
-        // Convert indices array to base64
         function indicesToBase64(indices) {
-            // indices are small integers, can store in a byte each
-            const bytes = new Uint8Array(indices.length * 2); 
-            // store each index as a signed 16-bit integer for simplicity
-            // (-1 for free, or 0..items.length-1)
-            // Or store as single byte if items < 256, here items < 256 so can store in one byte:
             const b = new Uint8Array(indices.length);
             for (let i = 0; i < indices.length; i++) {
-                // If -1 for free square, store 255
-                b[i] = (indices[i] === -1) ? 255 : indices[i];
+                b[i] = indices[i];
             }
             let str = String.fromCharCode.apply(null, b);
             return btoa(str);
         }
 
-        // Decompress from URL:
         function base64ToIndices(b64) {
             const str = atob(b64);
             const arr = new Uint8Array(str.length);
             for (let i = 0; i < str.length; i++) {
                 arr[i] = str.charCodeAt(i);
             }
-            // Convert 255 back to -1
-            return Array.from(arr).map(v => v === 255 ? -1 : v);
+            return Array.from(arr);
         }
 
         function base64ToBinary(b64) {
@@ -324,11 +280,10 @@
             for (let byte of bytes) {
                 bin += byte.toString(2).padStart(8, '0');
             }
-            // We know we only need 25 bits, truncate if needed
+            // Only first 25 bits are needed since it's a 5x5 grid
             return bin.slice(0, 25);
         }
 
-        // Rebuild card and marked states from compressed format
         function rebuildCard(indices, bin) {
             const bingoCard = Array.from({ length: 5 }, () => []);
             const marked = Array.from({ length: 5 }, () => []);
@@ -336,11 +291,7 @@
             for (let row = 0; row < 5; row++) {
                 for (let col = 0; col < 5; col++) {
                     const val = indices[idx];
-                    if (val === -1) {
-                        bingoCard[row][col] = "Free Square";
-                    } else {
-                        bingoCard[row][col] = items[val];
-                    }
+                    bingoCard[row][col] = items[val];
                     marked[row][col] = (bin[idx] === '1');
                     idx++;
                 }
