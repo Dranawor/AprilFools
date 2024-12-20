@@ -79,23 +79,25 @@
             padding: 5px;
             position: relative;
             cursor: pointer;
-            overflow: hidden;
+            box-sizing: border-box;
+            /* Removed overflow: hidden; here */
         }
 
         .grid-item span {
             font-size: clamp(16px, 3vw, 18px);
             font-weight: bold;
-            line-height: 1.4; /* Increased line-height */
+            line-height: 1.4;
             color: #333;
             white-space: normal;
             word-break: break-word;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2; /* Limit to 2 lines */
-            overflow: hidden;
+            -webkit-line-clamp: 2; 
+            overflow: hidden; /* Keep overflow hidden for line clamp */
             max-width: 95%;
             margin-top: 2px;
-            padding-bottom: 6px; /* Extra padding to prevent cutoff */
+            padding-bottom: 6px;
+            padding-right: 5px; /* Added right padding to prevent clipping */
             box-sizing: border-box;
         }
 
