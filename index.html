@@ -80,7 +80,6 @@
             position: relative;
             cursor: pointer;
             box-sizing: border-box;
-            /* Removed overflow: hidden; here */
         }
 
         .grid-item span {
@@ -93,11 +92,11 @@
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2; 
-            overflow: hidden; /* Keep overflow hidden for line clamp */
+            overflow: hidden;
             max-width: 95%;
             margin-top: 2px;
             padding-bottom: 6px;
-            padding-right: 5px; /* Added right padding to prevent clipping */
+            padding-right: 5px;
             box-sizing: border-box;
         }
 
@@ -123,6 +122,13 @@
             align-items: center;
             margin: 5px 0;
             flex-wrap: wrap;
+        }
+
+        /* Responsive adjustments for mobile screens */
+        @media (max-width: 480px) {
+            .grid-item span {
+                font-size: clamp(12px, 5vw, 16px); /* Smaller text for narrow screens */
+            }
         }
     </style>
 </head>
@@ -179,7 +185,6 @@
         }
 
         function generateBingoCard() {
-            // Use all 25 items, shuffled
             const shuffledItems = shuffleArray([...items]);
 
             const bingoCard = Array.from({ length: 5 }, () => []);
@@ -282,8 +287,7 @@
             for (let byte of bytes) {
                 bin += byte.toString(2).padStart(8, '0');
             }
-            // Only first 25 bits are needed since it's a 5x5 grid
-            return bin.slice(0, 25);
+            return bin.slice(0, 25); // Only need first 25 bits for 5x5 grid
         }
 
         function rebuildCard(indices, bin) {
