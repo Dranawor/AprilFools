@@ -82,19 +82,16 @@
       box-sizing: border-box;
     }
     .grid-item span {
-      font-size: clamp(12px, 2.5vw, 18px);
+      font-size: clamp(10px, 2vw, 14px);
       font-weight: bold;
-      line-height: 1.4;
+      line-height: 1.3;
       color: #333;
       white-space: normal;
-      word-break: break-word;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      overflow: hidden;
+      word-break: normal;
+      overflow-wrap: normal;
+      hyphens: none;
       max-width: 95%;
       margin-top: 2px;
-      padding-bottom: 6px;
       padding-right: 5px;
     }
     .grid-item.marked::after {
@@ -103,7 +100,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: clamp(50px, 10vw, 120px);
+      font-size: clamp(30px, 8vw, 120px);
       color: #e36039;
       font-weight: bold;
       line-height: 1;
@@ -242,20 +239,20 @@
     }
     function base64ToIndices(b64) {
       const str = atob(b64);
-      const u8 = new Uint8Array(str.length);
+      const u = new Uint8Array(str.length);
       for (let i = 0; i < str.length; i++) {
-        u8[i] = str.charCodeAt(i);
+        u[i] = str.charCodeAt(i);
       }
-      return Array.from(u8);
+      return Array.from(u);
     }
     function base64ToBin(b64) {
       const str = atob(b64);
-      const u8 = new Uint8Array(str.length);
+      const u = new Uint8Array(str.length);
       for (let i = 0; i < str.length; i++) {
-        u8[i] = str.charCodeAt(i);
+        u[i] = str.charCodeAt(i);
       }
       let bin = "";
-      for (let x of u8) {
+      for (let x of u) {
         bin += x.toString(2).padStart(8, "0");
       }
       return bin.slice(0, 25);
