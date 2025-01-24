@@ -4,18 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>April Fools Bingo</title>
+  <!-- Updated font link: Oswald -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald&display=swap"
+    rel="stylesheet"
+  >
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <style>
-    html, body {
+    html,
+    body {
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
       -moz-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
+    /* Changed font to Oswald */
     body {
-      font-family: 'Bangers', cursive;
+      font-family: 'Oswald', sans-serif;
       background-color: #f4f4f4;
       margin: 0;
       padding: 0;
@@ -138,6 +144,7 @@
     ];
     let currentCard = null;
     let markedStates = null;
+
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -145,6 +152,7 @@
       }
       return array;
     }
+
     function generateBingoCard() {
       const shuffled = shuffleArray([...items]);
       const b = Array.from({ length: 5 }, () => []);
@@ -158,6 +166,7 @@
       markedStates = Array.from({ length: 5 }, () => Array(5).fill(false));
       renderBingoCard(b, markedStates);
     }
+
     function renderBingoCard(b, m) {
       const g = document.getElementById("bingoGrid");
       g.innerHTML = "";
@@ -179,6 +188,7 @@
         }
       }
     }
+
     async function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -201,6 +211,7 @@
       doc.addImage(imgData, "JPEG", margin, margin, iw, ih);
       doc.save("bingo_card.pdf");
     }
+
     function cardToIndices() {
       const arr = [];
       for (let r = 0; r < 5; r++) {
@@ -212,6 +223,7 @@
       }
       return arr;
     }
+
     function markedToBinary() {
       let bin = "";
       for (let r = 0; r < 5; r++) {
@@ -221,6 +233,7 @@
       }
       return bin;
     }
+
     function indicesToBase64(a) {
       const u8 = new Uint8Array(a.length);
       for (let i = 0; i < a.length; i++) {
@@ -228,6 +241,7 @@
       }
       return btoa(String.fromCharCode(...u8));
     }
+
     function binToBase64(bin) {
       const len = Math.ceil(bin.length / 8);
       const u8 = new Uint8Array(len);
@@ -237,6 +251,7 @@
       }
       return btoa(String.fromCharCode(...u8));
     }
+
     function base64ToIndices(b64) {
       const str = atob(b64);
       const u = new Uint8Array(str.length);
@@ -245,6 +260,7 @@
       }
       return Array.from(u);
     }
+
     function base64ToBin(b64) {
       const str = atob(b64);
       const u = new Uint8Array(str.length);
@@ -257,6 +273,7 @@
       }
       return bin.slice(0, 25);
     }
+
     function rebuildCard(indices, bin) {
       const nc = Array.from({ length: 5 }, () => []);
       const nm = Array.from({ length: 5 }, () => []);
@@ -271,6 +288,7 @@
       }
       return { nc, nm };
     }
+
     function generateShareLink() {
       if (!currentCard || !markedStates) {
         alert("Please shuffle a card first.");
@@ -290,6 +308,7 @@
         alert("Could not copy link automatically. Please copy the URL manually.");
       });
     }
+
     window.addEventListener("DOMContentLoaded", () => {
       const p = new URLSearchParams(window.location.search);
       const cVal = p.get("c");
@@ -310,6 +329,7 @@
         generateBingoCard();
       }
     });
+
     (function loadHtml2Canvas() {
       const s = document.createElement("script");
       s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
