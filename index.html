@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>April Fools Bingo</title>
-  <!-- Updated font link: Oswald -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Oswald&display=swap"
@@ -19,7 +18,6 @@
       -moz-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
-    /* Changed font to Oswald */
     body {
       font-family: 'Oswald', sans-serif;
       background-color: #f4f4f4;
@@ -92,10 +90,7 @@
       font-weight: bold;
       line-height: 1.3;
       color: #333;
-      white-space: normal;
-      word-break: normal;
-      overflow-wrap: normal;
-      hyphens: none;
+      white-space: pre-line;
       max-width: 95%;
       margin-top: 2px;
       padding-right: 5px;
@@ -174,8 +169,11 @@
         for (let c = 0; c < 5; c++) {
           const d = document.createElement("div");
           d.classList.add("grid-item");
+          
+          const words = b[r][c].split(' ');
           const span = document.createElement("span");
-          span.textContent = b[r][c];
+          span.innerHTML = words.join('<br>');
+          
           d.appendChild(span);
           d.addEventListener("click", () => {
             d.classList.toggle("marked");
