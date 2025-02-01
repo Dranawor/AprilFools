@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -82,7 +82,7 @@
       box-sizing: border-box;
     }
     .grid-item span {
-      font-size: clamp(12px, 3vw, 20px);
+      font-size: clamp(10px, 2vw, 14px);
       font-weight: bold;
       line-height: 1.3;
       color: #333;
@@ -97,7 +97,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: clamp(40px, 8vw, 120px);
+      font-size: clamp(30px, 8vw, 120px);
       color: #e36039;
       font-weight: bold;
       line-height: 1;
@@ -107,10 +107,10 @@
     }
     @media (min-width: 1024px) {
       .grid-item span {
-        font-size: 36px;
+        font-size: 28px;
       }
       .grid-item.marked::after {
-        font-size: 140px;
+        font-size: 90px;
       }
     }
     .button-row {
@@ -143,8 +143,6 @@
     ]
     let currentCard = null
     let markedStates = null
-    let hasAlertedBingo = false
-
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -152,7 +150,6 @@
       }
       return array
     }
-
     function generateBingoCard() {
       const shuffled = shuffleArray([...items])
       const b = Array.from({ length: 5 }, () => [])
@@ -164,10 +161,8 @@
       }
       currentCard = b
       markedStates = Array.from({ length: 5 }, () => Array(5).fill(false))
-      hasAlertedBingo = false
       renderBingoCard(b, markedStates)
     }
-
     function renderBingoCard(b, m) {
       const g = document.getElementById("bingoGrid")
       g.innerHTML = ""
@@ -191,15 +186,11 @@
         }
       }
     }
-
     function checkBingo() {
       const size = 5
       for (let r = 0; r < size; r++) {
-        if (markedStates[r].every(val => val)) {
-          if (!hasAlertedBingo) {
-            alert("BINGO!")
-            hasAlertedBingo = true
-          }
+        if (markedStates[r].every(v => v)) {
+          alert("Bingo!")
           return
         }
       }
@@ -212,27 +203,20 @@
           }
         }
         if (colComplete) {
-          if (!hasAlertedBingo) {
-            alert("BINGO!")
-            hasAlertedBingo = true
-          }
+          alert("Bingo!")
           return
         }
       }
-      let diag1Complete = true
-      let diag2Complete = true
+      let diag1 = true
+      let diag2 = true
       for (let i = 0; i < size; i++) {
-        if (!markedStates[i][i]) diag1Complete = false
-        if (!markedStates[i][size - 1 - i]) diag2Complete = false
+        if (!markedStates[i][i]) diag1 = false
+        if (!markedStates[i][size - 1 - i]) diag2 = false
       }
-      if (diag1Complete || diag2Complete) {
-        if (!hasAlertedBingo) {
-          alert("BINGO!")
-          hasAlertedBingo = true
-        }
+      if (diag1 || diag2) {
+        alert("Bingo!")
       }
     }
-
     async function downloadPDF() {
       const { jsPDF } = window.jspdf
       const doc = new jsPDF()
@@ -255,7 +239,6 @@
       doc.addImage(imgData, "JPEG", margin, margin, iw, ih)
       doc.save("bingo_card.pdf")
     }
-
     function cardToIndices() {
       const arr = []
       for (let r = 0; r < 5; r++) {
@@ -267,7 +250,6 @@
       }
       return arr
     }
-
     function markedToBinary() {
       let bin = ""
       for (let r = 0; r < 5; r++) {
@@ -277,7 +259,6 @@
       }
       return bin
     }
-
     function indicesToBase64(a) {
       const u8 = new Uint8Array(a.length)
       for (let i = 0; i < a.length; i++) {
@@ -285,7 +266,6 @@
       }
       return btoa(String.fromCharCode(...u8))
     }
-
     function binToBase64(bin) {
       const len = Math.ceil(bin.length / 8)
       const u8 = new Uint8Array(len)
@@ -295,7 +275,6 @@
       }
       return btoa(String.fromCharCode(...u8))
     }
-
     function base64ToIndices(b64) {
       const str = atob(b64)
       const u = new Uint8Array(str.length)
@@ -304,7 +283,6 @@
       }
       return Array.from(u)
     }
-
     function base64ToBin(b64) {
       const str = atob(b64)
       const u = new Uint8Array(str.length)
@@ -317,7 +295,6 @@
       }
       return bin.slice(0, 25)
     }
-
     function rebuildCard(indices, bin) {
       const nc = Array.from({ length: 5 }, () => [])
       const nm = Array.from({ length: 5 }, () => [])
@@ -332,7 +309,6 @@
       }
       return { nc, nm }
     }
-
     function generateShareLink() {
       if (!currentCard || !markedStates) {
         alert("Please shuffle a card first.")
@@ -352,7 +328,6 @@
         alert("Could not copy link automatically. Please copy the URL manually.")
       })
     }
-
     window.addEventListener("DOMContentLoaded", () => {
       const p = new URLSearchParams(window.location.search)
       const cVal = p.get("c")
@@ -372,7 +347,6 @@
         generateBingoCard()
       }
     })
-
     ;(function loadHtml2Canvas() {
       const s = document.createElement("script")
       s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
