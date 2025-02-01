@@ -143,6 +143,7 @@
     ]
     let currentCard = null
     let markedStates = null
+    let lineComplete = Array(12).fill(false)
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -161,6 +162,7 @@
       }
       currentCard = b
       markedStates = Array.from({ length: 5 }, () => Array(5).fill(false))
+      lineComplete = Array(12).fill(false)
       renderBingoCard(b, markedStates)
     }
     function renderBingoCard(b, m) {
@@ -187,34 +189,45 @@
       }
     }
     function checkBingo() {
-      const size = 5
-      for (let r = 0; r < size; r++) {
-        if (markedStates[r].every(v => v)) {
-          alert("Bingo!")
-          return
-        }
-      }
-      for (let c = 0; c < size; c++) {
-        let colComplete = true
-        for (let r = 0; r < size; r++) {
-          if (!markedStates[r][c]) {
-            colComplete = false
-            break
+      for (let i = 0; i < 12; i++) {
+        let complete = false
+        if (i < 5) {
+          complete = markedStates[i].every(val => val)
+        } else if (i < 10) {
+          const col = i - 5
+          let allMarked = true
+          for (let r = 0; r < 5; r++) {
+            if (!markedStates[r][col]) {
+              allMarked = false
+              break
+            }
           }
+          complete = allMarked
+        } else if (i === 10) {
+          let allDiag = true
+          for (let d = 0; d < 5; d++) {
+            if (!markedStates[d][d]) {
+              allDiag = false
+              break
+            }
+          }
+          complete = allDiag
+        } else if (i === 11) {
+          let allDiag = true
+          for (let d = 0; d < 5; d++) {
+            if (!markedStates[d][4 - d]) {
+              allDiag = false
+              break
+            }
+          }
+          complete = allDiag
         }
-        if (colComplete) {
+        if (complete && !lineComplete[i]) {
           alert("Bingo!")
-          return
+          lineComplete[i] = true
+        } else if (!complete && lineComplete[i]) {
+          lineComplete[i] = false
         }
-      }
-      let diag1 = true
-      let diag2 = true
-      for (let i = 0; i < size; i++) {
-        if (!markedStates[i][i]) diag1 = false
-        if (!markedStates[i][size - 1 - i]) diag2 = false
-      }
-      if (diag1 || diag2) {
-        alert("Bingo!")
       }
     }
     async function downloadPDF() {
