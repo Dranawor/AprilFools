@@ -1,18 +1,14 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>April Fools Bingo</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Oswald&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <style>
-    html,
-    body {
+    html, body {
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
       -moz-text-size-adjust: 100%;
@@ -86,7 +82,7 @@
       box-sizing: border-box;
     }
     .grid-item span {
-      font-size: clamp(10px, 2vw, 14px);
+      font-size: clamp(12px, 3vw, 20px);
       font-weight: bold;
       line-height: 1.3;
       color: #333;
@@ -101,13 +97,21 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: clamp(30px, 8vw, 120px);
+      font-size: clamp(40px, 8vw, 120px);
       color: #e36039;
       font-weight: bold;
       line-height: 1;
       pointer-events: none;
       z-index: 2;
       opacity: 0.7;
+    }
+    @media (min-width: 1024px) {
+      .grid-item span {
+        font-size: 36px;
+      }
+      .grid-item.marked::after {
+        font-size: 140px;
+      }
     }
     .button-row {
       display: flex;
@@ -136,204 +140,245 @@
       "Finspan","Libertalia","My Little Scythe","Namiji","Pendulum","Red Rising","Rolling Realms",
       "Rolling Realms Redux","Scythe","Smitten","Stamp Swap","Tapestry","Tokaido","Tokaido Duo",
       "Vantage","Viticulture","Wingspan","Wingspan Asia","Wyrmspan"
-    ];
-    let currentCard = null;
-    let markedStates = null;
+    ]
+    let currentCard = null
+    let markedStates = null
+    let hasAlertedBingo = false
 
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[array[i], array[j]] = [array[j], array[i]]
       }
-      return array;
+      return array
     }
 
     function generateBingoCard() {
-      const shuffled = shuffleArray([...items]);
-      const b = Array.from({ length: 5 }, () => []);
-      let idx = 0;
+      const shuffled = shuffleArray([...items])
+      const b = Array.from({ length: 5 }, () => [])
+      let idx = 0
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          b[r][c] = shuffled[idx++];
+          b[r][c] = shuffled[idx++]
         }
       }
-      currentCard = b;
-      markedStates = Array.from({ length: 5 }, () => Array(5).fill(false));
-      renderBingoCard(b, markedStates);
+      currentCard = b
+      markedStates = Array.from({ length: 5 }, () => Array(5).fill(false))
+      hasAlertedBingo = false
+      renderBingoCard(b, markedStates)
     }
 
     function renderBingoCard(b, m) {
-      const g = document.getElementById("bingoGrid");
-      g.innerHTML = "";
+      const g = document.getElementById("bingoGrid")
+      g.innerHTML = ""
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          const d = document.createElement("div");
-          d.classList.add("grid-item");
-          
-          const words = b[r][c].split(' ');
-          const span = document.createElement("span");
-          span.innerHTML = words.join('<br>');
-          
-          d.appendChild(span);
+          const d = document.createElement("div")
+          d.classList.add("grid-item")
+          const words = b[r][c].split(' ')
+          const span = document.createElement("span")
+          span.innerHTML = words.join('<br>')
+          d.appendChild(span)
           d.addEventListener("click", () => {
-            d.classList.toggle("marked");
-            m[r][c] = d.classList.contains("marked");
-          });
+            d.classList.toggle("marked")
+            m[r][c] = d.classList.contains("marked")
+            checkBingo()
+          })
           if (m[r][c]) {
-            d.classList.add("marked");
+            d.classList.add("marked")
           }
-          g.appendChild(d);
+          g.appendChild(d)
+        }
+      }
+    }
+
+    function checkBingo() {
+      const size = 5
+      for (let r = 0; r < size; r++) {
+        if (markedStates[r].every(val => val)) {
+          if (!hasAlertedBingo) {
+            alert("BINGO!")
+            hasAlertedBingo = true
+          }
+          return
+        }
+      }
+      for (let c = 0; c < size; c++) {
+        let colComplete = true
+        for (let r = 0; r < size; r++) {
+          if (!markedStates[r][c]) {
+            colComplete = false
+            break
+          }
+        }
+        if (colComplete) {
+          if (!hasAlertedBingo) {
+            alert("BINGO!")
+            hasAlertedBingo = true
+          }
+          return
+        }
+      }
+      let diag1Complete = true
+      let diag2Complete = true
+      for (let i = 0; i < size; i++) {
+        if (!markedStates[i][i]) diag1Complete = false
+        if (!markedStates[i][size - 1 - i]) diag2Complete = false
+      }
+      if (diag1Complete || diag2Complete) {
+        if (!hasAlertedBingo) {
+          alert("BINGO!")
+          hasAlertedBingo = true
         }
       }
     }
 
     async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const container = document.getElementById("bingoCardContainer");
-      const scale = 2;
-      const cv = await html2canvas(container, { scale, useCORS: true, allowTaint: false });
-      const imgData = cv.toDataURL("image/jpeg", 0.5);
-      const w = doc.internal.pageSize.getWidth();
-      const h = doc.internal.pageSize.getHeight();
-      const margin = 10;
-      const aw = w - margin * 2;
-      const ah = h - margin * 2;
-      const ratio = cv.height / cv.width;
-      let iw = aw;
-      let ih = iw * ratio;
+      const { jsPDF } = window.jspdf
+      const doc = new jsPDF()
+      const container = document.getElementById("bingoCardContainer")
+      const scale = 2
+      const cv = await html2canvas(container, { scale, useCORS: true, allowTaint: false })
+      const imgData = cv.toDataURL("image/jpeg", 0.5)
+      const w = doc.internal.pageSize.getWidth()
+      const h = doc.internal.pageSize.getHeight()
+      const margin = 10
+      const aw = w - margin * 2
+      const ah = h - margin * 2
+      const ratio = cv.height / cv.width
+      let iw = aw
+      let ih = iw * ratio
       if (ih > ah) {
-        ih = ah;
-        iw = ih / ratio;
+        ih = ah
+        iw = ih / ratio
       }
-      doc.addImage(imgData, "JPEG", margin, margin, iw, ih);
-      doc.save("bingo_card.pdf");
+      doc.addImage(imgData, "JPEG", margin, margin, iw, ih)
+      doc.save("bingo_card.pdf")
     }
 
     function cardToIndices() {
-      const arr = [];
+      const arr = []
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          const t = currentCard[r][c];
-          const i = items.indexOf(t);
-          arr.push(i);
+          const t = currentCard[r][c]
+          const i = items.indexOf(t)
+          arr.push(i)
         }
       }
-      return arr;
+      return arr
     }
 
     function markedToBinary() {
-      let bin = "";
+      let bin = ""
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          bin += markedStates[r][c] ? "1" : "0";
+          bin += markedStates[r][c] ? "1" : "0"
         }
       }
-      return bin;
+      return bin
     }
 
     function indicesToBase64(a) {
-      const u8 = new Uint8Array(a.length);
+      const u8 = new Uint8Array(a.length)
       for (let i = 0; i < a.length; i++) {
-        u8[i] = a[i];
+        u8[i] = a[i]
       }
-      return btoa(String.fromCharCode(...u8));
+      return btoa(String.fromCharCode(...u8))
     }
 
     function binToBase64(bin) {
-      const len = Math.ceil(bin.length / 8);
-      const u8 = new Uint8Array(len);
+      const len = Math.ceil(bin.length / 8)
+      const u8 = new Uint8Array(len)
       for (let i = 0; i < len; i++) {
-        const chunk = bin.slice(i * 8, i * 8 + 8).padEnd(8, "0");
-        u8[i] = parseInt(chunk, 2);
+        const chunk = bin.slice(i * 8, i * 8 + 8).padEnd(8, "0")
+        u8[i] = parseInt(chunk, 2)
       }
-      return btoa(String.fromCharCode(...u8));
+      return btoa(String.fromCharCode(...u8))
     }
 
     function base64ToIndices(b64) {
-      const str = atob(b64);
-      const u = new Uint8Array(str.length);
+      const str = atob(b64)
+      const u = new Uint8Array(str.length)
       for (let i = 0; i < str.length; i++) {
-        u[i] = str.charCodeAt(i);
+        u[i] = str.charCodeAt(i)
       }
-      return Array.from(u);
+      return Array.from(u)
     }
 
     function base64ToBin(b64) {
-      const str = atob(b64);
-      const u = new Uint8Array(str.length);
+      const str = atob(b64)
+      const u = new Uint8Array(str.length)
       for (let i = 0; i < str.length; i++) {
-        u[i] = str.charCodeAt(i);
+        u[i] = str.charCodeAt(i)
       }
-      let bin = "";
+      let bin = ""
       for (let x of u) {
-        bin += x.toString(2).padStart(8, "0");
+        bin += x.toString(2).padStart(8, "0")
       }
-      return bin.slice(0, 25);
+      return bin.slice(0, 25)
     }
 
     function rebuildCard(indices, bin) {
-      const nc = Array.from({ length: 5 }, () => []);
-      const nm = Array.from({ length: 5 }, () => []);
-      let idx = 0;
+      const nc = Array.from({ length: 5 }, () => [])
+      const nm = Array.from({ length: 5 }, () => [])
+      let idx = 0
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
-          const ii = indices[idx];
-          nc[r][c] = items[ii];
-          nm[r][c] = bin[idx] === "1";
-          idx++;
+          const ii = indices[idx]
+          nc[r][c] = items[ii]
+          nm[r][c] = bin[idx] === "1"
+          idx++
         }
       }
-      return { nc, nm };
+      return { nc, nm }
     }
 
     function generateShareLink() {
       if (!currentCard || !markedStates) {
-        alert("Please shuffle a card first.");
-        return;
+        alert("Please shuffle a card first.")
+        return
       }
-      const arr = cardToIndices();
-      const bin = markedToBinary();
-      const cB64 = indicesToBase64(arr);
-      const mB64 = binToBase64(bin);
-      const url = new URL(window.location.href);
-      url.searchParams.set("c", cB64);
-      url.searchParams.set("m", mB64);
-      const shareURL = url.toString();
+      const arr = cardToIndices()
+      const bin = markedToBinary()
+      const cB64 = indicesToBase64(arr)
+      const mB64 = binToBase64(bin)
+      const url = new URL(window.location.href)
+      url.searchParams.set("c", cB64)
+      url.searchParams.set("m", mB64)
+      const shareURL = url.toString()
       navigator.clipboard.writeText(shareURL).then(() => {
-        alert("Your custom link has been copied to your clipboard!\nPlease keep it safe so that you can pick up where you left off or share your card with others.");
+        alert("Your custom link has been copied to your clipboard!\nPlease keep it safe so that you can pick up where you left off or share your card with others.")
       }).catch(() => {
-        alert("Could not copy link automatically. Please copy the URL manually.");
-      });
+        alert("Could not copy link automatically. Please copy the URL manually.")
+      })
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const p = new URLSearchParams(window.location.search);
-      const cVal = p.get("c");
-      const mVal = p.get("m");
+      const p = new URLSearchParams(window.location.search)
+      const cVal = p.get("c")
+      const mVal = p.get("m")
       if (cVal && mVal) {
         try {
-          const indices = base64ToIndices(cVal);
-          const bin = base64ToBin(mVal);
-          const { nc, nm } = rebuildCard(indices, bin);
-          currentCard = nc;
-          markedStates = nm;
-          renderBingoCard(nc, nm);
+          const indices = base64ToIndices(cVal)
+          const bin = base64ToBin(mVal)
+          const { nc, nm } = rebuildCard(indices, bin)
+          currentCard = nc
+          markedStates = nm
+          renderBingoCard(nc, nm)
         } catch (e) {
-          console.error(e);
-          generateBingoCard();
+          generateBingoCard()
         }
       } else {
-        generateBingoCard();
+        generateBingoCard()
       }
-    });
+    })
 
-    (function loadHtml2Canvas() {
-      const s = document.createElement("script");
-      s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-      s.async = true;
-      document.head.appendChild(s);
-    })();
+    ;(function loadHtml2Canvas() {
+      const s = document.createElement("script")
+      s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+      s.async = true
+      document.head.appendChild(s)
+    })()
   </script>
 </body>
 </html>
